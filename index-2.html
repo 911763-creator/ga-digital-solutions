@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HG Digital Solutions - Intelligente Buchungslösungen</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0A1F44;
+            --secondary-color: #00B4D8;
+            --accent-color: #F77F00;
+            --light-bg: #F8F9FA;
+            --dark-text: #1A1A2E;
+            --light-text: #FFFFFF;
+            --gradient-1: linear-gradient(135deg, #0A1F44 0%, #00B4D8 100%);
+            --gradient-2: linear-gradient(135deg, #00B4D8 0%, #F77F00 100%);
+            --shadow-1: 0 10px 40px rgba(0, 180, 216, 0.15);
+            --shadow-2: 0 20px 60px rgba(10, 31, 68, 0.2);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--gradient-2);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Mobile Menu Button - nur für Handys */
+        .mobile-menu-button {
+            display: none;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1002;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .mobile-menu-button:hover,
+        .mobile-menu-button:active {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-1);
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before {
+            top: -8px;
+        }
+
+        .hamburger::after {
+            bottom: -8px;
+        }
+
+        /* Animation wenn Menü offen */
+        .mobile-menu-button.active .hamburger {
+            background: transparent;
+        }
+
+        .mobile-menu-button.active .hamburger::before {
+            top: 0;
+            transform: rotate(45deg);
+        }
+
+        .mobile-menu-button.active .hamburger::after {
+            bottom: 0;
+            transform: rotate(-45deg);
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 31, 68, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+        }
+
+        .mobile-menu-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 2rem;
+        }
+
+        .mobile-menu-overlay a {
+            color: white;
+            text-decoration: none;
+            font-size: 2rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active a {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-menu-overlay a:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-menu-overlay a:nth-child(2) { transition-delay: 0.2s; }
+        .mobile-menu-overlay a:nth-child(3) { transition-delay: 0.3s; }
+        .mobile-menu-overlay a:nth-child(4) { transition-delay: 0.4s; }
+        .mobile-menu-overlay a:nth-child(5) { transition-delay: 0.5s; }
+
+        .mobile-menu-overlay a:hover {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .cta-button {
+            padding: 0.8rem 2rem;
+            background: var(--gradient-1);
+            color: var(--light-text);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-1);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #0A1F44 0%, #1a3a5c 50%, #00B4D8 100%);
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--light-text);
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-content .highlight {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            animation: fadeInUp 1s ease 0.4s backwards;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: fadeInRight 1s ease 0.6s backwards;
+        }
+
+        .floating-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* About Section */
+        .about {
+            padding: 8rem 2rem;
+            background: var(--light-bg);
+        }
+
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-2);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 8rem 2rem;
+            background: var(--primary-color);
+            color: var(--light-text);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 4rem;
+        }
+
+        .service-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-2);
+            opacity: 0.1;
+            border-radius: 50%;
+            transform: translate(50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02);
+        }
+
+        .service-card:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .service-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .service-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-features {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .service-features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .service-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Process Section */
+        .process {
+            padding: 8rem 2rem;
+            background: var(--light-bg);
+        }
+
+        .process-timeline {
+            max-width: 1000px;
+            margin: 4rem auto 0;
+            position: relative;
+        }
+
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gradient-1);
+            transform: translateX(-50%);
+        }
+
+        .process-step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .process-step:nth-child(even) .step-content {
+            order: 2;
+        }
+
+        .step-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            box-shadow: 0 5px 20px rgba(0, 180, 216, 0.3);
+        }
+
+        .step-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .step-content p {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 8rem 2rem;
+            background: white;
+        }
+
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 2rem;
+            background: var(--light-bg);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(10px);
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .contact-details h4 {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-form {
+            background: var(--light-bg);
+            padding: 3rem;
+            border-radius: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-1);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: var(--light-text);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+
+        .footer-links h4 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .hero-container,
+            .contact-container,
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+
+            /* Kleinere Schrift für Service Cards */
+            .service-card h3 {
+                font-size: 1.5rem;
+                line-height: 1.3;
+                word-wrap: break-word;
+            }
+
+            .service-number {
+                font-size: 2.5rem;
+            }
+
+            .service-card {
+                padding: 2.5rem 1.8rem;
+            }
+
+            .process-timeline::before {
+                left: 30px;
+            }
+
+            .process-step {
+                grid-template-columns: 1fr;
+                padding-left: 80px;
+            }
+
+            .process-step:nth-child(even) .step-content {
+                order: 1;
+            }
+
+            .step-number {
+                left: 30px;
+                transform: translateY(-50%);
+            }
+        }
+
+        /* Extra Breakpoint für kleinere Desktops/große Tablets */
+        @media (max-width: 1200px) {
+            .service-card h3 {
+                font-size: 1.6rem;
+                line-height: 1.3;
+            }
+
+            .services-grid {
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            /* Zeige Hamburger-Button nur auf Handy */
+            .mobile-menu-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Verstecke normale Navigation auf Handy */
+            .nav-links {
+                display: none;
+            }
+
+            /* Zeige Mobile Menu Overlay */
+            .mobile-menu-overlay {
+                display: block;
+            }
+
+            /* CTA Button auf Handy kleiner oder ausblenden */
+            .nav-container .cta-button {
+                display: none;
+            }
+
+            .features-grid,
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll animations */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-animate.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">HG Digital Solutions</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">Über Uns</a></li>
+                <li><a href="#services">Leistungen</a></li>
+                <li><a href="#process">Prozess</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+            <a href="buchung.html" class="cta-button">Jetzt Starten</a>
+            
+            <!-- Mobile Menu Button (nur auf Handy sichtbar) -->
+            <button class="mobile-menu-button" id="mobileMenuBtn">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay (nur auf Handy sichtbar) -->
+    <div class="mobile-menu-overlay" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <a href="index.html">Home</a>
+            <a href="#about">Über Uns</a>
+            <a href="dienstleistungen.html">Dienstleistungen</a>
+            <a href="#contact">Kontakt</a>
+            <a href="buchung.html">Jetzt Buchen</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1>
+                    Intelligente
+                    <span class="highlight">Buchungs&shy;lösungen</span>
+                    für moderne Unternehmen
+                </h1>
+                <p>
+                    Wir digitalisieren Ihre Geschäftsprozesse mit maßgeschneiderten Buchungssystemen und modernem Webdesign. Effizient, klar und zuverlässig.
+                </p>
+                <div class="hero-buttons">
+                    <a href="buchung.html" class="cta-button">Kostenlose Beratung</a>
+                    <a href="#services" class="cta-button" style="background: transparent; border: 2px solid white;">Unsere Leistungen</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-number">100%</span>
+                            <span class="stat-label">Zufriedene Kunden</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">24/7</span>
+                            <span class="stat-label">Support</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">∞</span>
+                            <span class="stat-label">Innovationen</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">⚡</span>
+                            <span class="stat-label">Schnelle Umsetzung</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="section-container">
+            <div class="section-header scroll-animate">
+                <span class="section-tag">Über Uns</span>
+                <h2 class="section-title">Wir machen Buchungen einfach</h2>
+                <p class="section-description">
+                    Höld & Gumpinger steht für digitale Exzellenz und kundenorientierte Lösungen. Wir transformieren komplexe Buchungsprozesse in intuitive, effiziente Systeme.
+                </p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Analyse & Optimierung</h3>
+                    <p>
+                        Wir analysieren Ihre bestehenden Prozesse und identifizieren Optimierungspotenziale. Durch datengetriebene Entscheidungen steigern wir Ihre Effizienz nachhaltig.
+                    </p>
+                </div>
+
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">💻</div>
+                    <h3>Digitale Implementierung</h3>
+                    <p>
+                        Moderne Buchungssysteme und professionelles Webdesign, perfekt auf Ihre Bedürfnisse zugeschnitten. Responsiv, schnell und benutzerfreundlich.
+                    </p>
+                </div>
+
+                <div class="feature-card scroll-animate">
+                    <div class="feature-icon">🤝</div>
+                    <h3>Langfristige Betreuung</h3>
+                    <p>
+                        Unsere Partnerschaft endet nicht mit der Implementierung. Wir bieten kontinuierlichen Support und helfen Ihnen, mit den neuesten Technologien Schritt zu halten.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag" style="color: var(--accent-color);">Unsere Leistungen</span>
+                <h2 class="section-title" style="color: white;">Maßgeschneiderte Lösungen</h2>
+                <p class="section-description" style="color: rgba(255, 255, 255, 0.8);">
+                    Von der ersten Analyse bis zur langfristigen Betreuung – wir begleiten Sie auf dem Weg zur digitalen Transformation.
+                </p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card scroll-animate">
+                    <span class="service-number">01</span>
+                    <h3>Prozessanalyse</h3>
+                    <p>
+                        Wir untersuchen Ihre bestehenden Abläufe im Detail und identifizieren Schwachstellen sowie Optimierungsmöglichkeiten.
+                    </p>
+                    <ul class="service-features">
+                        <li>Workflow-Analyse</li>
+                        <li>Effizienzsteigerung</li>
+                        <li>Kostenoptimierung</li>
+                        <li>Individuelles Reporting</li>
+                    </ul>
+                </div>
+
+                <div class="service-card scroll-animate">
+                    <span class="service-number">02</span>
+                    <h3>Systemimplementierung</h3>
+                    <p>
+                        Entwicklung und Integration digitaler Buchungssysteme sowie moderner Websites, die perfekt zu Ihrem Unternehmen passen.
+                    </p>
+                    <ul class="service-features">
+                        <li>Maßgeschneiderte Lösungen</li>
+                        <li>Responsive Webdesign</li>
+                        <li>API-Integration</li>
+                        <li>Cloud-basierte Systeme</li>
+                    </ul>
+                </div>
+
+                <div class="service-card scroll-animate">
+                    <span class="service-number">03</span>
+                    <h3>Support & Wartung</h3>
+                    <p>
+                        Kontinuierliche Betreuung und Weiterentwicklung Ihrer digitalen Infrastruktur für nachhaltigen Erfolg.
+                    </p>
+                    <ul class="service-features">
+                        <li>24/7 technischer Support</li>
+                        <li>Regelmäßige Updates</li>
+                        <li>Performance-Monitoring</li>
+                        <li>Schulungen</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process" id="process">
+        <div class="section-container">
+            <div class="section-header scroll-animate">
+                <span class="section-tag">Unser Prozess</span>
+                <h2 class="section-title">Wie wir arbeiten</h2>
+                <p class="section-description">
+                    Ein strukturierter Prozess garantiert höchste Qualität und pünktliche Lieferung.
+                </p>
+            </div>
+
+            <div class="process-timeline">
+                <div class="process-step scroll-animate">
+                    <div class="step-content">
+                        <h3>Erstgespräch & Analyse</h3>
+                        <p>
+                            Wir lernen Sie und Ihr Unternehmen kennen. Gemeinsam definieren wir Ziele, Anforderungen und den idealen Projektumfang.
+                        </p>
+                    </div>
+                    <div class="step-number">1</div>
+                    <div></div>
+                </div>
+
+                <div class="process-step scroll-animate">
+                    <div></div>
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Konzeption & Design</h3>
+                        <p>
+                            Auf Basis der Analyse entwickeln wir ein maßgeschneidertes Konzept. Wireframes und Prototypen visualisieren die geplante Lösung.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="process-step scroll-animate">
+                    <div class="step-content">
+                        <h3>Entwicklung & Testing</h3>
+                        <p>
+                            Unsere Entwickler setzen das Konzept in die Realität um. Umfangreiche Tests garantieren Stabilität und Performance.
+                        </p>
+                    </div>
+                    <div class="step-number">3</div>
+                    <div></div>
+                </div>
+
+                <div class="process-step scroll-animate">
+                    <div></div>
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3>Launch & Support</h3>
+                        <p>
+                            Nach erfolgreicher Implementierung gehen wir live. Wir bleiben an Ihrer Seite und sorgen für reibungslosen Betrieb.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="section-container">
+            <div class="section-header scroll-animate">
+                <span class="section-tag">Kontakt</span>
+                <h2 class="section-title">Lassen Sie uns sprechen</h2>
+                <p class="section-description">
+                    Bereit für die digitale Transformation? Kontaktieren Sie uns für ein unverbindliches Erstgespräch.
+                </p>
+            </div>
+
+            <div class="contact-container">
+                <div class="contact-info">
+                    <div class="contact-item scroll-animate">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <h4>Adresse</h4>
+                            <p>Neufnachstraße 6<br>86877 Walkertshofen<br>Deutschland</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item scroll-animate">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-details">
+                            <h4>Email</h4>
+                            <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4adaaa2ab84aca3e9a0ada3adb0a5a8e9b7aba8b1b0adabaab7eaa0a1">[email&#160;protected]</a></p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item scroll-animate">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-details">
+                            <h4>Telefon</h4>
+                            <p>01702793789</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="contact-form scroll-animate">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Nachricht</label>
+                        <textarea id="message" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-button">Nachricht Senden</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>HG Digital Solutions</h3>
+                <p>
+                    Wir machen Buchungen einfach. Intelligente digitale Lösungen für moderne Unternehmen.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">Über Uns</a></li>
+                    <li><a href="#services">Leistungen</a></li>
+                    <li><a href="#contact">Kontakt</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#services">Prozessanalyse</a></li>
+                    <li><a href="#services">Systemimplementierung</a></li>
+                    <li><a href="#services">Webdesign</a></li>
+                    <li><a href="#services">Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Rechtliches</h4>
+                <ul>
+                    <li><a href="#impressum">Impressum</a></li>
+                    <li><a href="#datenschutz">Datenschutz</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 HG Digital Solutions GbR - Höld & Gumpinger. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const body = document.body;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Schließe Menü wenn auf Link geklickt wird
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                body.style.overflow = '';
+            });
+        });
+
+        // Navbar scroll effect - versteckt sich beim Runterscrollen
+        let lastScrollTop = 0;
+        const navbar = document.querySelector('.navbar');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Scrolled state (kleinere Navbar)
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            // Hide/Show beim Scrollen (nur wenn nicht ganz oben)
+            if (currentScroll > 100) {
+                if (currentScroll > lastScrollTop) {
+                    // Scrolling DOWN - verstecke Navbar
+                    navbar.classList.add('hidden');
+                } else {
+                    // Scrolling UP - zeige Navbar
+                    navbar.classList.remove('hidden');
+                }
+            } else {
+                // Ganz oben - immer zeigen
+                navbar.classList.remove('hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Form submission
+        document.querySelector('.contact
