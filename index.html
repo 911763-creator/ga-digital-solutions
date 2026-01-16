@@ -44,12 +44,17 @@
             backdrop-filter: blur(10px);
             padding: 1rem 0;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+            transform: translateY(0);
         }
 
         .navbar.scrolled {
             padding: 0.5rem 0;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
         }
 
         .nav-container {
@@ -116,11 +121,14 @@
             border: none;
             cursor: pointer;
             position: relative;
-            z-index: 1001;
+            z-index: 1002;
             transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
-        .mobile-menu-button:hover {
+        .mobile-menu-button:hover,
+        .mobile-menu-button:active {
             transform: scale(1.1);
             box-shadow: var(--shadow-1);
         }
@@ -1194,7 +1202,7 @@
                         <div class="contact-icon">📧</div>
                         <div class="contact-details">
                             <h4>Email</h4>
-                            <p>info@hg-digital-solutions.de</p>
+                            <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4adaaa2ab84aca3e9a0ada3adb0a5a8e9b7aba8b1b0adabaab7eaa0a1">[email&#160;protected]</a></p>
                         </div>
                     </div>
 
@@ -1273,7 +1281,7 @@
         </div>
     </footer>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         // Mobile Menu Toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
@@ -1295,14 +1303,35 @@
             });
         });
 
-        // Navbar scroll effect
+        // Navbar scroll effect - versteckt sich beim Runterscrollen
+        let lastScrollTop = 0;
+        const navbar = document.querySelector('.navbar');
+        
         window.addEventListener('scroll', () => {
-            const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Scrolled state (kleinere Navbar)
+            if (currentScroll > 50) {
                 navbar.classList.add('scrolled');
             } else {
                 navbar.classList.remove('scrolled');
             }
+            
+            // Hide/Show beim Scrollen (nur wenn nicht ganz oben)
+            if (currentScroll > 100) {
+                if (currentScroll > lastScrollTop) {
+                    // Scrolling DOWN - verstecke Navbar
+                    navbar.classList.add('hidden');
+                } else {
+                    // Scrolling UP - zeige Navbar
+                    navbar.classList.remove('hidden');
+                }
+            } else {
+                // Ganz oben - immer zeigen
+                navbar.classList.remove('hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         });
 
         // Scroll animations
@@ -1338,11 +1367,4 @@
         });
 
         // Form submission
-        document.querySelector('.contact-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('Vielen Dank für Ihre Nachricht! Wir melden uns in Kürze bei Ihnen.');
-            e.target.reset();
-        });
-    </script>
-</body>
-</html>
+        document.querySelector('.contact

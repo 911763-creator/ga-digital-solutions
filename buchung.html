@@ -45,6 +45,12 @@
             backdrop-filter: blur(10px);
             padding: 1rem 0;
             box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
         }
 
         .nav-container {
@@ -95,11 +101,14 @@
             border: none;
             cursor: pointer;
             position: relative;
-            z-index: 1001;
+            z-index: 1002;
             transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
-        .mobile-menu-button:hover {
+        .mobile-menu-button:hover,
+        .mobile-menu-button:active {
             transform: scale(1.1);
             box-shadow: var(--shadow-1);
         }
@@ -983,11 +992,19 @@
         const mobileMenu = document.getElementById('mobileMenu');
         const body = document.body;
 
-        mobileMenuBtn.addEventListener('click', () => {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
             mobileMenuBtn.classList.toggle('active');
             mobileMenu.classList.toggle('active');
             body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
         });
+
+        // Touch event für bessere mobile Unterstützung
+        mobileMenuBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            mobileMenuBtn.click();
+        }, { passive: false });
 
         // Schließe Menü wenn auf Link geklickt wird
         const mobileMenuLinks = mobileMenu.querySelectorAll('a');
@@ -997,6 +1014,30 @@
                 mobileMenu.classList.remove('active');
                 body.style.overflow = '';
             });
+        });
+
+        // Navbar scroll effect - versteckt sich beim Runterscrollen
+        let lastScrollTop = 0;
+        const navbar = document.querySelector('.navbar');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Hide/Show beim Scrollen (nur wenn nicht ganz oben)
+            if (currentScroll > 100) {
+                if (currentScroll > lastScrollTop) {
+                    // Scrolling DOWN - verstecke Navbar
+                    navbar.classList.add('hidden');
+                } else {
+                    // Scrolling UP - zeige Navbar
+                    navbar.classList.remove('hidden');
+                }
+            } else {
+                // Ganz oben - immer zeigen
+                navbar.classList.remove('hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         });
 
         // Package selection
