@@ -449,38 +449,48 @@
             display: flex;
             align-items: flex-start;
             gap: 1rem;
-            padding: 1rem;
+            padding: 1.2rem;
             background: var(--light-bg);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-bottom: 1rem;
+            border: 2px solid transparent;
         }
 
         .checkbox-group:hover {
             background: rgba(0, 180, 216, 0.05);
+            border-color: var(--secondary-color);
         }
 
-        .checkbox-group input[type="checkbox"] {
+        .checkbox-group input[type="checkbox"],
+        .checkbox-group input[type="radio"] {
             width: 20px;
             height: 20px;
+            min-width: 20px;
             cursor: pointer;
             accent-color: var(--secondary-color);
+            margin-top: 2px;
         }
 
         .checkbox-label {
             flex: 1;
+            word-wrap: break-word;
         }
 
         .checkbox-label strong {
             display: block;
             color: var(--primary-color);
             margin-bottom: 0.3rem;
+            font-size: 1.05rem;
+            line-height: 1.4;
         }
 
         .checkbox-label span {
             color: #666;
             font-size: 0.9rem;
+            line-height: 1.5;
+            display: block;
         }
 
         /* Summary Box */
@@ -664,6 +674,34 @@
 
             .mobile-menu-overlay {
                 display: block;
+            }
+
+            /* Verbessere Checkbox/Radio Darstellung auf Handy */
+            .checkbox-group {
+                padding: 1rem;
+            }
+
+            .checkbox-label strong {
+                font-size: 1rem;
+            }
+
+            .checkbox-label span {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Extra Breakpoint für mittlere Bildschirme */
+        @media (max-width: 1200px) {
+            .booking-container {
+                gap: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .checkbox-group {
+                padding: 1rem;
             }
         }
     </style>
