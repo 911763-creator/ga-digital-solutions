@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dienstleistungen - HG Digital Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0A1F44;
+            --secondary-color: #00B4D8;
+            --accent-color: #F77F00;
+            --light-bg: #F8F9FA;
+            --dark-text: #1A1A2E;
+            --light-text: #FFFFFF;
+            --gradient-1: linear-gradient(135deg, #0A1F44 0%, #00B4D8 100%);
+            --gradient-2: linear-gradient(135deg, #00B4D8 0%, #F77F00 100%);
+            --shadow-1: 0 10px 40px rgba(0, 180, 216, 0.15);
+            --shadow-2: 0 20px 60px rgba(10, 31, 68, 0.2);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            overflow-x: hidden;
+            background: var(--light-bg);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background: var(--gradient-2);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--secondary-color);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a.active {
+            color: var(--secondary-color);
+        }
+
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            padding: 0.8rem 2rem;
+            background: var(--gradient-1);
+            color: var(--light-text);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-1);
+        }
+
+        /* Mobile Menu Button - nur für Handys */
+        .mobile-menu-button {
+            display: none;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1002;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .mobile-menu-button:hover,
+        .mobile-menu-button:active {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-1);
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before {
+            top: -8px;
+        }
+
+        .hamburger::after {
+            bottom: -8px;
+        }
+
+        .mobile-menu-button.active .hamburger {
+            background: transparent;
+        }
+
+        .mobile-menu-button.active .hamburger::before {
+            top: 0;
+            transform: rotate(45deg);
+        }
+
+        .mobile-menu-button.active .hamburger::after {
+            bottom: 0;
+            transform: rotate(-45deg);
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 31, 68, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+        }
+
+        .mobile-menu-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 2rem;
+        }
+
+        .mobile-menu-overlay a {
+            color: white;
+            text-decoration: none;
+            font-size: 2rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active a {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-menu-overlay a:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-menu-overlay a:nth-child(2) { transition-delay: 0.2s; }
+        .mobile-menu-overlay a:nth-child(3) { transition-delay: 0.3s; }
+        .mobile-menu-overlay a:nth-child(4) { transition-delay: 0.4s; }
+        .mobile-menu-overlay a:nth-child(5) { transition-delay: 0.5s; }
+
+        .mobile-menu-overlay a:hover {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #0A1F44 0%, #1a3a5c 50%, #00B4D8 100%);
+            position: relative;
+            overflow: hidden;
+            padding-top: 80px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(0, 180, 216, 0.1) 0%, transparent 70%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--light-text);
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero .highlight {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        /* Info Section */
+        .info-section {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .info-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .section-tag {
+            color: var(--secondary-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-description {
+            font-size: 1.2rem;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        /* Services Section */
+        .services-section {
+            padding: 6rem 2rem;
+            background: var(--light-bg);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-2);
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--gradient-1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: white;
+        }
+
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            line-height: 1.3;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .service-features {
+            list-style: none;
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .service-features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #666;
+        }
+
+        .service-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--light-bg);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            border: 2px solid #E0E0E0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .pricing-card.featured {
+            background: linear-gradient(135deg, #0A1F44 0%, #00B4D8 100%);
+            color: white;
+            border-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-2);
+            border-color: var(--secondary-color);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.08);
+        }
+
+        .pricing-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-2);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            line-height: 1.3;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .pricing-card.featured h3 {
+            color: white;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card.featured .pricing-price {
+            background: linear-gradient(135deg, #F77F00 0%, #FFFFFF 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .pricing-subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-card.featured .pricing-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 0.8rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: #666;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .pricing-card.featured .pricing-features li {
+            color: rgba(255, 255, 255, 0.9);
+            border-bottom-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--secondary-color);
+            font-weight: bold;
+        }
+
+        .pricing-card.featured .pricing-features li::before {
+            color: var(--accent-color);
+        }
+
+        .pricing-button {
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .pricing-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-1);
+        }
+
+        .pricing-card.featured .pricing-button {
+            background: white;
+            color: var(--primary-color);
+        }
+
+        /* Portfolio Preview Section */
+        .portfolio-section {
+            padding: 6rem 2rem;
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .portfolio-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .portfolio-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.3) 0%, rgba(247, 127, 0, 0.3) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portfolio-image::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        }
+
+        .portfolio-content {
+            padding: 2rem;
+        }
+
+        .portfolio-tag {
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-item h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .portfolio-item p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding: 6rem 2rem;
+            background: var(--light-bg);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-1);
+        }
+
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 1rem;
+            color: white;
+        }
+
+        .contact-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-card p {
+            color: #666;
+        }
+
+        .contact-card a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: var(--light-text);
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+        }
+
+        .footer-links h4 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-animate.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            /* Kleinere Schrift für Cards */
+            .service-card h3,
+            .pricing-card h3,
+            .portfolio-item h3 {
+                font-size: 1.3rem;
+                line-height: 1.3;
+                word-wrap: break-word;
+            }
+
+            .service-card,
+            .pricing-card {
+                padding: 2.5rem 1.8rem;
+            }
+        }
+
+        /* Extra Breakpoint für kleinere Desktops/große Tablets */
+        @media (max-width: 1200px) {
+            .service-card h3,
+            .pricing-card h3 {
+                font-size: 1.4rem;
+                line-height: 1.3;
+            }
+
+            .services-grid,
+            .pricing-grid {
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .mobile-menu-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .nav-container .cta-button {
+                display: none;
+            }
+
+            .mobile-menu-overlay {
+                display: block;
+            }
+
+            .services-grid,
+            .pricing-grid,
+            .portfolio-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">HG Digital Solutions</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="dienstleistungen.html" class="active">Dienstleistungen</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Kontakt</a></li>
+            </ul>
+            <a href="buchung.html" class="cta-button">Jetzt Buchen</a>
+            
+            <!-- Mobile Menu Button (nur auf Handy sichtbar) -->
+            <button class="mobile-menu-button" id="mobileMenuBtn">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay (nur auf Handy sichtbar) -->
+    <div class="mobile-menu-overlay" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <a href="index.html">Home</a>
+            <a href="index.html#about">Über Uns</a>
+            <a href="dienstleistungen.html">Dienstleistungen</a>
+            <a href="#contact">Kontakt</a>
+            <a href="buchung.html">Jetzt Buchen</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1>
+                Unsere <span class="highlight">Dienstleistungen</span>
+            </h1>
+            <p>
+                Digitale Lösungen, die Ihr Unternehmen voranbringen. Von Buchungssystemen bis zur Website-Entwicklung – alles aus einer Hand.
+            </p>
+        </div>
+    </section>
+
+    <!-- Info Section -->
+    <section class="info-section">
+        <div class="section-container">
+            <div class="info-content scroll-animate">
+                <span class="section-tag">Über Unsere Services</span>
+                <h2 class="section-title">Maßgeschneiderte Lösungen für Ihr Business</h2>
+                <p class="section-description">
+                    Wir sind stolz auf unsere Anpassungsfähigkeit und unser Engagement für Spitzenleistungen in jedem Aspekt unseres Services. Erkunden Sie, was wir zu bieten haben, und finden Sie heraus, wie wir zu Ihrem Erfolg beitragen können.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services-section">
+        <div class="section-container">
+            <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
+                <span class="section-tag">Unsere Leistungen</span>
+                <h2 class="section-title">Was wir für Sie tun können</h2>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card scroll-animate">
+                    <div class="service-icon">📅</div>
+                    <h3>Online-Buchungssysteme</h3>
+                    <p>Moderne Buchungslösungen, die Ihre Kunden begeistern und Ihre Prozesse automatisieren.</p>
+                    <ul class="service-features">
+                        <li>24/7 Online-Buchung</li>
+                        <li>Automatische Bestätigungen</li>
+                        <li>Erinnerungen & Notifications</li>
+                        <li>Kalender-Integration</li>
+                    </ul>
+                </div>
+
+                <div class="service-card scroll-animate">
+                    <div class="service-icon">💬</div>
+                    <h3>Kundenkommunikation</h3>
+                    <p>Professionelle Kommunikationslösungen für bessere Kundenbindung und weniger No-Shows.</p>
+                    <ul class="service-features">
+                        <li>E-Mail & SMS Automation</li>
+                        <li>DSGVO-konforme Systeme</li>
+                        <li>Reminder-Funktionen</li>
+                        <li>Feedback-Management</li>
+                    </ul>
+                </div>
+
+                <div class="service-card scroll-animate">
+                    <div class="service-icon">⚙️</div>
+                    <h3>Automatisierung</h3>
+                    <p>Optimieren Sie Ihre Abläufe durch intelligente Automatisierung und sparen Sie wertvolle Zeit.</p>
+                    <ul class="service-features">
+                        <li>Effiziente Workflow-Automation</li>
+                        <li>Deutliche Zeitersparnis</li>
+                        <li>Fehlerreduktion</li>
+                        <li>Ressourcenoptimierung</li>
+                    </ul>
+                </div>
+
+                <div class="service-card scroll-animate">
+                    <div class="service-icon">🎨</div>
+                    <h3>Website Design</h3>
+                    <p>Moderne, professionelle Websites, die perfekt zu Ihrer Marke passen und Kunden überzeugen.</p>
+                    <ul class="service-features">
+                        <li>Modernes, responsives Design</li>
+                        <li>Passend zu Ihrer Marke</li>
+                        <li>SEO-optimiert</li>
+                        <li>Performance-fokussiert</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <div class="section-container">
+            <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
+                <span class="section-tag">Angebotsmodelle</span>
+                <h2 class="section-title">Flexible Pakete für jeden Bedarf</h2>
+                <p class="section-description">
+                    Wählen Sie das Paket, das am besten zu Ihren Anforderungen passt. Alle Preise auf Anfrage und individuell anpassbar.
+                </p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card scroll-animate">
+                    <h3>Starter</h3>
+                    <div class="pricing-price">Auf Anfrage</div>
+                    <p class="pricing-subtitle">Perfekt für kleine Unternehmen</p>
+                    <ul class="pricing-features">
+                        <li>Interaktive Website</li>
+                        <li>Server-Hosting inklusive</li>
+                        <li>Responsive Design</li>
+                        <li>Basis SEO-Optimierung</li>
+                        <li>Email-Support</li>
+                    </ul>
+                    <a href="buchung.html" class="pricing-button">Anfrage senden</a>
+                </div>
+
+                <div class="pricing-card featured scroll-animate">
+                    <div class="pricing-badge">⭐ Beliebt</div>
+                    <h3>Business</h3>
+                    <div class="pricing-price">Auf Anfrage</div>
+                    <p class="pricing-subtitle">Für wachsende Unternehmen</p>
+                    <ul class="pricing-features">
+                        <li>Buchungsmodell integriert</li>
+                        <li>Vollständige Automatisierung</li>
+                        <li>Detaillierte Auswertung & Analytics</li>
+                        <li>Kundenkommunikation</li>
+                        <li>Priority Support</li>
+                        <li>Monatliche Updates</li>
+                    </ul>
+                    <a href="buchung.html" class="pricing-button">Anfrage senden</a>
+                </div>
+
+                <div class="pricing-card scroll-animate">
+                    <h3>Premium</h3>
+                    <div class="pricing-price">Auf Anfrage</div>
+                    <p class="pricing-subtitle">Die Komplettlösung</p>
+                    <ul class="pricing-features">
+                        <li>Website inkl. Buchungssystem</li>
+                        <li>Persönliche Betreuung</li>
+                        <li>Individuelle Features</li>
+                        <li>Advanced Analytics</li>
+                        <li>24/7 Support</li>
+                        <li>Unbegrenzte Updates</li>
+                        <li>Training & Schulungen</li>
+                    </ul>
+                    <a href="buchung.html" class="pricing-button">Anfrage senden</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Preview Section -->
+    <section class="portfolio-section" id="portfolio">
+        <div class="section-container">
+            <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
+                <span class="section-tag" style="color: var(--accent-color);">Portfolio</span>
+                <h2 class="section-title" style="color: white;">Unsere neuesten Arbeiten</h2>
+                <p class="section-description" style="color: rgba(255, 255, 255, 0.8);">
+                    Entdecken Sie unsere Sammlung kreativer Arbeiten und visueller Projekte. Jedes Stück zeigt unsere Liebe zum Detail und unser Engagement, Ergebnisse zu liefern, die Erwartungen übertreffen.
+                </p>
+            </div>
+
+            <div class="portfolio-grid">
+                <div class="portfolio-item scroll-animate">
+                    <div class="portfolio-image">🏥</div>
+                    <div class="portfolio-content">
+                        <div class="portfolio-tag">Gesundheitswesen</div>
+                        <h3>Praxis Buchungssystem</h3>
+                        <p>Komplettes Online-Buchungssystem für eine Arztpraxis mit Termin-Management und Patientenverwaltung.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item scroll-animate">
+                    <div class="portfolio-image">🏨</div>
+                    <div class="portfolio-content">
+                        <div class="portfolio-tag">Hospitality</div>
+                        <h3>Hotel Reservierungssystem</h3>
+                        <p>Moderne Website mit integriertem Buchungssystem für ein Boutique-Hotel in Bayern.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item scroll-animate">
+                    <div class="portfolio-image">💇</div>
+                    <div class="portfolio-content">
+                        <div class="portfolio-tag">Beauty & Wellness</div>
+                        <h3>Salon Management</h3>
+                        <p>Vollautomatisiertes Buchungs- und Verwaltungssystem für einen modernen Friseursalon.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item scroll-animate">
+                    <div class="portfolio-image">🍽️</div>
+                    <div class="portfolio-content">
+                        <div class="portfolio-tag">Gastronomie</div>
+                        <h3>Restaurant Reservierung</h3>
+                        <p>Elegante Tischreservierungs-Lösung mit Kundenverwaltung und automatischen Bestätigungen.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item scroll-animate">
+                    <div class="portfolio-image">🏋️</div>
+                    <div class="portfolio-content">
+                        <div class="portfolio-tag">Fitness</div>
+                        <h3>Fitnessstudio Plattform</h3>
+                        <p>Umfassendes System für Kursanmeldungen, Mitgliederverwaltung und Online-Zahlungen.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item scroll-animate">
+                    <div class="portfolio-image">🎓</div>
+                    <div class="portfolio-content">
+                        <div class="portfolio-tag">Bildung</div>
+                        <h3>Coaching Buchungssystem</h3>
+                        <p>Plattform für Online-Coaching mit Terminplanung, Videocalls und Zahlungsintegration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="section-container">
+            <div class="section-header" style="text-align: center; margin-bottom: 2rem;">
+                <span class="section-tag">Kontakt</span>
+                <h2 class="section-title">Lassen Sie uns sprechen</h2>
+                <p class="section-description">
+                    Haben Sie Fragen zu unseren Dienstleistungen? Wir sind für Sie da!
+                </p>
+            </div>
+
+            <div class="contact-grid">
+                <div class="contact-card scroll-animate">
+                    <div class="contact-icon">📞</div>
+                    <h3>Telefon</h3>
+                    <p><a href="tel:017627931789">0176 / 27931789</a></p>
+                </div>
+
+                <div class="contact-card scroll-animate">
+                    <div class="contact-icon">📧</div>
+                    <h3>Email</h3>
+                    <p><a href="/cdn-cgi/l/email-protection#5c35323a331c343b7138353b35283d30712f333029283533322f723839"><span class="__cf_email__" data-cfemail="b5dcdbd3daf5ddd298d1dcd2dcc1d4d998c6dad9c0c1dcdadbc69bd1d0">[email&#160;protected]</span></a></p>
+                </div>
+
+                <div class="contact-card scroll-animate">
+                    <div class="contact-icon">📍</div>
+                    <h3>Adresse</h3>
+                    <p>Neufnachstraße 6<br>86877 Walkertshofen</p>
+                </div>
+
+                <div class="contact-card scroll-animate">
+                    <div class="contact-icon">🕐</div>
+                    <h3>Öffnungszeiten</h3>
+                    <p>Mo - Fr: 9:00 - 18:00<br>Sa: Nach Vereinbarung</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="buchung.html" class="cta-button" style="font-size: 1.1rem; padding: 1.2rem 3rem;">
+                    Jetzt kostenlose Beratung buchen
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <h3>HG Digital Solutions</h3>
+                <p>
+                    Intelligente digitale Lösungen für moderne Unternehmen. Wir machen Buchungen einfach.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="dienstleistungen.html">Dienstleistungen</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li><a href="buchung.html">Buchen</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Services</h4>
+                <ul>
+                    <li><a href="#services">Buchungssysteme</a></li>
+                    <li><a href="#services">Webdesign</a></li>
+                    <li><a href="#services">Automatisierung</a></li>
+                    <li><a href="#contact">Support</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h4>Rechtliches</h4>
+                <ul>
+                    <li><a href="#impressum">Impressum</a></li>
+                    <li><a href="#datenschutz">Datenschutz</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 HG Digital Solutions GbR - Höld & Gumpinger. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const body = document.body;
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Touch event für bessere mobile Unterstützung
+        mobileMenuBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            mobileMenuBtn.click();
+        }, { passive: false });
+
+        // Schließe Menü wenn auf Link geklickt wird
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                body.style.overflow = '';
+            });
+        });
+
+        // Navbar scroll effect - versteckt sich beim Runterscrollen
+        let lastScrollTop = 0;
+        const navbar = document.querySelector('.navbar');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Scrolled state (kleinere Navbar)
+            if (currentScroll > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            // Hide/Show beim Scrollen (nur wenn nicht ganz oben)
+            if (currentScroll > 100) {
+                if (currentScroll > lastScrollTop) {
+                    // Scrolling DOWN - verstecke Navbar
+                    navbar.classList.add('hidden');
+                } else {
+                    // Scrolling UP - zeige Navbar
+                    navbar.classList.remove('hidden');
+                }
+            } else {
+                // Ganz oben - immer zeigen
+                navbar.classList.remove('hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'

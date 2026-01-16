@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buchung - HG Digital Solutions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #0A1F44;
+            --secondary-color: #00B4D8;
+            --accent-color: #F77F00;
+            --light-bg: #F8F9FA;
+            --dark-text: #1A1A2E;
+            --light-text: #FFFFFF;
+            --gradient-1: linear-gradient(135deg, #0A1F44 0%, #00B4D8 100%);
+            --gradient-2: linear-gradient(135deg, #00B4D8 0%, #F77F00 100%);
+            --shadow-1: 0 10px 40px rgba(0, 180, 216, 0.15);
+            --shadow-2: 0 20px 60px rgba(10, 31, 68, 0.2);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-text);
+            overflow-x: hidden;
+            background: var(--light-bg);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .back-button {
+            padding: 0.8rem 2rem;
+            background: var(--gradient-1);
+            color: var(--light-text);
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-1);
+        }
+
+        /* Mobile Menu Button - nur für Handys */
+        .mobile-menu-button {
+            display: none;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            z-index: 1002;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .mobile-menu-button:hover,
+        .mobile-menu-button:active {
+            transform: scale(1.1);
+            box-shadow: var(--shadow-1);
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before,
+        .hamburger::after {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: white;
+            position: absolute;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger::before {
+            top: -8px;
+        }
+
+        .hamburger::after {
+            bottom: -8px;
+        }
+
+        .mobile-menu-button.active .hamburger {
+            background: transparent;
+        }
+
+        .mobile-menu-button.active .hamburger::before {
+            top: 0;
+            transform: rotate(45deg);
+        }
+
+        .mobile-menu-button.active .hamburger::after {
+            bottom: 0;
+            transform: rotate(-45deg);
+        }
+
+        .mobile-menu-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 31, 68, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active {
+            opacity: 1;
+        }
+
+        .mobile-menu-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            gap: 2rem;
+        }
+
+        .mobile-menu-overlay a {
+            color: white;
+            text-decoration: none;
+            font-size: 2rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-overlay.active a {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .mobile-menu-overlay a:nth-child(1) { transition-delay: 0.1s; }
+        .mobile-menu-overlay a:nth-child(2) { transition-delay: 0.2s; }
+        .mobile-menu-overlay a:nth-child(3) { transition-delay: 0.3s; }
+        .mobile-menu-overlay a:nth-child(4) { transition-delay: 0.4s; }
+        .mobile-menu-overlay a:nth-child(5) { transition-delay: 0.5s; }
+
+        .mobile-menu-overlay a:hover {
+            color: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        /* Main Content */
+        .booking-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 2rem 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        /* Left Side - Info */
+        .booking-info {
+            position: sticky;
+            top: 120px;
+        }
+
+        .booking-header {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-1);
+            margin-bottom: 2rem;
+        }
+
+        .booking-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .booking-header .highlight {
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .booking-header p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .benefits-list {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--light-bg);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .benefit-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .service-packages {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-1);
+        }
+
+        .service-packages h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .package {
+            padding: 1.5rem;
+            border: 2px solid #E0E0E0;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .package:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 180, 216, 0.15);
+        }
+
+        .package.selected {
+            border-color: var(--secondary-color);
+            background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(247, 127, 0, 0.05) 100%);
+        }
+
+        .package.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 30px;
+            height: 30px;
+            background: var(--gradient-1);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .package-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .package-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .package-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Right Side - Form */
+        .booking-form-container {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-2);
+        }
+
+        .form-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-number {
+            width: 35px;
+            height: 35px;
+            background: var(--gradient-1);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: var(--accent-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #E0E0E0;
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .date-time-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.2rem;
+            background: var(--light-bg);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+            border: 2px solid transparent;
+        }
+
+        .checkbox-group:hover {
+            background: rgba(0, 180, 216, 0.05);
+            border-color: var(--secondary-color);
+        }
+
+        .checkbox-group input[type="checkbox"],
+        .checkbox-group input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            cursor: pointer;
+            accent-color: var(--secondary-color);
+            margin-top: 2px;
+        }
+
+        .checkbox-label {
+            flex: 1;
+            word-wrap: break-word;
+        }
+
+        .checkbox-label strong {
+            display: block;
+            color: var(--primary-color);
+            margin-bottom: 0.3rem;
+            font-size: 1.05rem;
+            line-height: 1.4;
+        }
+
+        .checkbox-label span {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            display: block;
+        }
+
+        /* Summary Box */
+        .booking-summary {
+            background: linear-gradient(135deg, #0A1F44 0%, #00B4D8 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .booking-summary h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 1.5rem;
+            background: var(--gradient-1);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-2);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: var(--shadow-2);
+        }
+
+        .success-message.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 2rem;
+            animation: scaleIn 0.5s ease;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-message h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .success-message p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .booking-details {
+            background: var(--light-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+
+        .booking-details h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .booking-container {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-info {
+                position: static;
+            }
+
+            .form-row,
+            .date-time-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .booking-header h1 {
+                font-size: 2rem;
+            }
+
+            .booking-form-container,
+            .booking-header {
+                padding: 2rem;
+            }
+
+            .mobile-menu-button {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .nav-container .back-button {
+                display: none;
+            }
+
+            .mobile-menu-overlay {
+                display: block;
+            }
+
+            /* Verbessere Checkbox/Radio Darstellung auf Handy */
+            .checkbox-group {
+                padding: 1rem;
+            }
+
+            .checkbox-label strong {
+                font-size: 1rem;
+            }
+
+            .checkbox-label span {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Extra Breakpoint für mittlere Bildschirme */
+        @media (max-width: 1200px) {
+            .booking-container {
+                gap: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .checkbox-group {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">HG Digital Solutions</a>
+            <a href="index.html" class="back-button">← Zurück zur Startseite</a>
+            
+            <!-- Mobile Menu Button (nur auf Handy sichtbar) -->
+            <button class="mobile-menu-button" id="mobileMenuBtn">
+                <span class="hamburger"></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay (nur auf Handy sichtbar) -->
+    <div class="mobile-menu-overlay" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <a href="index.html">Home</a>
+            <a href="index.html#about">Über Uns</a>
+            <a href="dienstleistungen.html">Dienstleistungen</a>
+            <a href="index.html#contact">Kontakt</a>
+            <a href="buchung.html">Jetzt Buchen</a>
+        </div>
+    </div>
+
+    <!-- Booking Container -->
+    <div class="booking-container">
+        <!-- Left Side - Info -->
+        <div class="booking-info">
+            <div class="booking-header">
+                <h1>Jetzt <span class="highlight">Beratung</span> buchen</h1>
+                <p>
+                    Vereinbaren Sie einen Termin mit unseren Experten und erfahren Sie, wie wir Ihre Geschäftsprozesse optimieren können.
+                </p>
+                <ul class="benefits-list">
+                    <li class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <span>Kostenlose Erstberatung</span>
+                    </li>
+                    <li class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <span>Individuelle Lösungskonzepte</span>
+                    </li>
+                    <li class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <span>Schnelle Rückmeldung (24h)</span>
+                    </li>
+                    <li class="benefit-item">
+                        <div class="benefit-icon">✓</div>
+                        <span>Unverbindliches Angebot</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="service-packages">
+                <h3>Unsere Pakete</h3>
+                <div class="package" data-package="starter" data-price="0">
+                    <div class="package-name">Starter Beratung</div>
+                    <div class="package-price">Kostenlos</div>
+                    <div class="package-description">30 Min. Erstgespräch zur Bedarfsanalyse</div>
+                </div>
+                <div class="package" data-package="business" data-price="150">
+                    <div class="package-name">Business Analyse</div>
+                    <div class="package-price">150€</div>
+                    <div class="package-description">2 Stunden intensive Prozessanalyse mit Konzept</div>
+                </div>
+                <div class="package" data-package="enterprise" data-price="500">
+                    <div class="package-name">Enterprise Workshop</div>
+                    <div class="package-price">500€</div>
+                    <div class="package-description">Ganztägiger Workshop mit individuellem Lösungsplan</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side - Form -->
+        <div class="booking-form-container">
+            <form id="bookingForm">
+                <!-- Section 1: Personal Info -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-number">1</span>
+                        Persönliche Informationen
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">Vorname <span class="required">*</span></label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Nachname <span class="required">*</span></label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefon <span class="required">*</span></label>
+                            <input type="tel" id="phone" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Unternehmen</label>
+                        <input type="text" id="company">
+                    </div>
+                </div>
+
+                <!-- Section 2: Service Selection -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-number">2</span>
+                        Ihr Anliegen
+                    </div>
+                    <div class="form-group">
+                        <label for="service">Welche Leistung interessiert Sie? <span class="required">*</span></label>
+                        <select id="service" required>
+                            <option value="">Bitte wählen...</option>
+                            <option value="buchungssystem">Digitales Buchungssystem</option>
+                            <option value="webdesign">Webdesign & Entwicklung</option>
+                            <option value="analyse">Prozessanalyse & Optimierung</option>
+                            <option value="integration">Systemintegration</option>
+                            <option value="support">Support & Wartung</option>
+                            <option value="andere">Andere Anfrage</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Beschreiben Sie Ihr Projekt <span class="required">*</span></label>
+                        <textarea id="message" required placeholder="Erzählen Sie uns mehr über Ihre Anforderungen und Ziele..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Section 3: Date & Time -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-number">3</span>
+                        Wunschtermin
+                    </div>
+                    <div class="date-time-grid">
+                        <div class="form-group">
+                            <label for="date">Datum <span class="required">*</span></label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="time">Uhrzeit <span class="required">*</span></label>
+                            <select id="time" required>
+                                <option value="">Bitte wählen...</option>
+                                <option value="09:00">09:00 Uhr</option>
+                                <option value="10:00">10:00 Uhr</option>
+                                <option value="11:00">11:00 Uhr</option>
+                                <option value="13:00">13:00 Uhr</option>
+                                <option value="14:00">14:00 Uhr</option>
+                                <option value="15:00">15:00 Uhr</option>
+                                <option value="16:00">16:00 Uhr</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Bevorzugte Kontaktmethode <span class="required">*</span></label>
+                        <div class="checkbox-group">
+                            <input type="radio" name="contact-method" value="video" id="video" required>
+                            <label for="video" class="checkbox-label">
+                                <strong>Videoanruf</strong>
+                                <span>Zoom, Teams oder Google Meet</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="radio" name="contact-method" value="phone" id="phone-call">
+                            <label for="phone-call" class="checkbox-label">
+                                <strong>Telefonanruf</strong>
+                                <span>Wir rufen Sie an</span>
+                            </label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="radio" name="contact-method" value="inperson" id="inperson">
+                            <label for="inperson" class="checkbox-label">
+                                <strong>Persönliches Treffen</strong>
+                                <span>In Walkertshofen oder bei Ihnen vor Ort</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Additional Options -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <span class="section-number">4</span>
+                        Zusätzliche Optionen
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="nda">
+                        <label for="nda" class="checkbox-label">
+                            <strong>NDA gewünscht</strong>
+                            <span>Ich möchte eine Vertraulichkeitsvereinbarung unterzeichnen</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="materials">
+                        <label for="materials" class="checkbox-label">
+                            <strong>Unterlagen vorab zusenden</strong>
+                            <span>Ich sende Ihnen vorab Informationen per Email</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="newsletter">
+                        <label for="newsletter" class="checkbox-label">
+                            <strong>Newsletter abonnieren</strong>
+                            <span>Informationen zu neuen Services und Tipps erhalten</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div class="booking-summary">
+                    <h3>📋 Ihre Buchungszusammenfassung</h3>
+                    <div class="summary-item">
+                        <span>Paket:</span>
+                        <strong id="summaryPackage">Noch nicht ausgewählt</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Datum:</span>
+                        <strong id="summaryDate">-</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Uhrzeit:</span>
+                        <strong id="summaryTime">-</strong>
+                    </div>
+                    <div class="summary-item">
+                        <span>Kosten:</span>
+                        <strong id="summaryPrice">0€</strong>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    <span>🚀</span>
+                    Buchung verbindlich anfragen
+                </button>
+            </form>
+
+            <!-- Success Message (initially hidden) -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✓</div>
+                <h2>Buchung erfolgreich!</h2>
+                <p>Vielen Dank für Ihre Buchungsanfrage. Wir haben Ihre Daten erhalten und werden uns innerhalb von 24 Stunden bei Ihnen melden.</p>
+                
+                <div class="booking-details" id="bookingDetailsDisplay">
+                    <h3>Ihre Buchungsdetails:</h3>
+                    <div class="detail-item">
+                        <span>Buchungsnummer:</span>
+                        <strong id="bookingNumber">-</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Paket:</span>
+                        <strong id="confirmedPackage">-</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Datum & Uhrzeit:</span>
+                        <strong id="confirmedDateTime">-</strong>
+                    </div>
+                    <div class="detail-item">
+                        <span>Kontaktmethode:</span>
+                        <strong id="confirmedMethod">-</strong>
+                    </div>
+                </div>
+
+                <a href="index.html" class="back-button">Zurück zur Startseite</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const body = document.body;
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            mobileMenuBtn.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        });
+
+        // Touch event für bessere mobile Unterstützung
+        mobileMenuBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            mobileMenuBtn.click();
+        }, { passive: false });
+
+        // Schließe Menü wenn auf Link geklickt wird
+        const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+        mobileMenuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                body.style.overflow = '';
+            });
+        });
+
+        // Navbar scroll effect - versteckt sich beim Runterscrollen
+        let lastScrollTop = 0;
+        const navbar = document.querySelector('.navbar');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Hide/Show beim Scrollen (nur wenn nicht ganz oben)
+            if (currentScroll > 100) {
+                if (currentScroll > lastScrollTop) {
+                    // Scrolling DOWN - verstecke Navbar
+                    navbar.classList.add('hidden');
+                } else {
+                    // Scrolling UP - zeige Navbar
+                    navbar.classList.remove('hidden');
+                }
+            } else {
+                // Ganz oben - immer zeigen
+                navbar.classList.remove('hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+
+        // Package selection
+        const packages = document.querySelectorAll('.package');
+        let selectedPackage = null;
+
+        packages.forEach(pkg => {
+            pkg.addEventListener('click', () => {
+                packages.forEach(p => p.classList.remove('selected'));
+                pkg.classList.add('selected');
+                selectedPackage = {
+                    name: pkg.querySelector('.package-name').textContent,
+                    price: pkg.dataset.price
+                };
+                updateSummary();
+            });
+        });
+
+        // Date selection
+        const dateInput = document.getElementById('date');
+        const today = new Date();
+        today.setDate(today.getDate() + 1); // Minimum tomorrow
+        dateInput.min = today.toISOString().split('T')[0];
+
+        // Real-time summary update
+        function updateSummary() {
+            const summaryPackage = document.getElementById('summaryPackage');
+            const summaryDate = document.getElementById('summaryDate');
+            const summaryTime = document.getElementById('summaryTime');
+            const summaryPrice = document.getElementById('summaryPrice');
+
+            if (selectedPackage) {
+                summaryPackage.textContent = selectedPackage.name;
+                summaryPrice.textContent = selectedPackage.price === "0" ? "Kostenlos" : selectedPackage.price + "€";
+            }
+
+            const date = dateInput.value;
+            const time = document.getElementById('time').value;
+
+            if (date) {
+                const dateObj = new Date(date);
+                summaryDate.textContent = dateObj.toLocaleDateString('de-DE', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+
+            if (time) {
+                summaryTime.textContent = time + " Uhr";
+            }
+        }
+
+        dateInput.addEventListener('change', updateSummary);
+        document.getElementById('time').addEventListener('change', updateSummary);
+
+        // Form submission
+        const form = document.getElementById('bookingForm');
+        const formContainer = document.querySelector('.booking-form-container');
+        const successMessage = document.getElementById('successMessage');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Validate package selection
+            if (!selectedPackage) {
+                alert('Bitte wählen Sie ein Paket aus!');
+                return;
+            }
+
+            // Get form data
+            const formData = {
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                company: document.getElementById('company').value,
+                service: document.getElementById('service').value,
+                message: document.getElementById('message').value,
+                date: dateInput.value,
+                time: document.getElementById('time').value,
+                contactMethod: document.querySelector('input[name="contact-method"]:checked').value,
+                package: selectedPackage,
+                nda: document.getElementById('nda').checked,
+                materials: document.getElementById('materials').checked,
+                newsletter: document.getElementById('newsletter').checked
+            };
+
+            // Generate booking number
+            const bookingNumber = 'HG' + Date.now().toString().slice(-8);
+
+            // Log to console (in production, this would be sent to a server)
+            console.log('Booking submitted:', formData);
+
+            // Display success message
+            form.style.display = 'none';
+            successMessage.classList.add('active');
+
+            // Fill in booking details
+            document.getElementById('bookingNumber').textContent = bookingNumber;
+            document.getElementById('confirmedPackage').textContent = selectedPackage.name;
+            
+            const dateObj = new Date(formData.date);
+            document.getElementById('confirmedDateTime').textContent = 
+                dateObj.toLocaleDateString('de-DE') + ' um ' + formData.time + ' Uhr';
+            
+            const methodText = {
+                'video': 'Videoanruf',
+                'phone': 'Telefonanruf',
+                'inperson': 'Persönliches Treffen'
+            };
+            document.getElementById('confirmedMethod').textContent = methodText[formData.contactMethod];
+
+            // Simulate email sending (in production, use backend API)
+            console.log(`
+                ✉️ EMAIL WÜRDE GESENDET AN: info@hg-digital-solutions.de
+                
+                Neue Buchungsanfrage!
+                
+                Buchungsnummer: ${bookingNumber}
+                Name: ${formData.firstName} ${formData.lastName}
+                Email: ${formData.email}
+                Telefon: ${formData.phone}
+                Unternehmen: ${formData.company}
+                
+                Paket: ${selectedPackage.name} (${selectedPackage.price}€)
+                Service: ${formData.service}
+                Termin: ${formData.date} um ${formData.time}
+                Kontaktmethode: ${methodText[formData.contactMethod]}
+                
+                Nachricht:
+                ${formData.message}
+                
+                Zusatzoptionen:
+                - NDA: ${formData.nda ? 'Ja' : 'Nein'}
+                - Unterlagen vorab: ${formData.materials ? 'Ja' : 'Nein'}
+                - Newsletter: ${formData.newsletter ? 'Ja' : 'Nein'}
+            `);
+
+            // Scroll to success message
+            successMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    </script>
+</body>
+</html>
